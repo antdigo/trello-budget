@@ -1,0 +1,20 @@
+{
+  "name": "Budget",
+  "details": "With the Budget Power-Up enabled, you'll be able to open a card and set a cost. That cost will be displayed on the front of the card (costs of zero are in red) and a sum of the costs will be displayed in the top right corner of your board.\n\n* Add costs to cards\n* See a summary of those costs on your board",
+  "icon": {
+    "url": "./logo.svg"
+  },
+  "author": "antdigo",
+  "capabilities": [
+    "board-buttons",
+    "callback",
+    "card-badges",
+    "card-buttons",
+    "show-settings"
+  ],
+  "connectors": {
+    "iframe": {
+      "url": "./index.html"
+    }
+  }
+}
