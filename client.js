@@ -23,7 +23,7 @@ var getBadges = function (t) {
                                         var badges = [];
                                         if (!costFields) {
                                             // create array
-                                            var newCostFields = ['Total Cost'];
+                                            var newCostFields = ['Бюджет'];
                                             return t.set('board', 'shared', 'costFields', newCostFields)
                                                 .then(function () {
                                                     return getBadges(t);
@@ -46,7 +46,7 @@ var getBadges = function (t) {
                                                 // costs are now stored in an array of objects, where the first object
                                                 // is always the default title.
                                                 var newCostArray = [];
-                                                newCostArray.push(costs['Total Cost']);
+                                                newCostArray.push(costs['Бюджет']);
                                                 return t.set('card', 'shared', 'costs', newCostArray)
                                                     .then(function () {
                                                         return t.set('board', 'shared', 'refresh', Math.random())
@@ -285,10 +285,10 @@ var getSettings = function (t) {
     return t.get('board', 'shared', 'costFields')
         .then(function (costFields) {
             return t.popup({
-                title: 'Manage Cost Fields',
+                title: 'Настройка',
                 items: function (t, options) {
                     var buttons = [{
-                        text: options.search !== '' ? 'Add cost field: ' + options.search : '(Enter a title to add cost field)',
+                        text: options.search !== '' ? 'Добавить поле: ' + options.search : '(Введите заголок нового поля)',
                         callback: function (t) {
                             costFields.push(options.search);
                             return t.set('board', 'shared', 'costFields', costFields)
@@ -303,10 +303,10 @@ var getSettings = function (t) {
                                 text: costField,
                                 callback: function (t) {
                                     return t.popup({
-                                        title: 'Set Field Name',
+                                        title: 'Изменить заголовок поля',
                                         items: function (t, subopt) {
                                             return [{
-                                                text: subopt.search !== '' ? 'Rename field to "' + subopt.search + '"' : '(Enter a new name for this field.)',
+                                                text: subopt.search !== '' ? 'Переименовать в "' + subopt.search + '"' : '(Введите новый заголовок поля)',
                                                 callback: function (t) {
                                                     costFields[idx] = subopt.search;
                                                     return t.set('board', 'shared', 'costFields', costFields)
@@ -315,7 +315,7 @@ var getSettings = function (t) {
                                                         });
                                                 }
                                             }, {
-                                                text: 'Delete ' + costField + ' field.',
+                                                text: 'Удалить поле "' + costField + '"',
                                                 callback: function (t) {
                                                     // not only do we need to delete this field from the costField array,
                                                     // we also need to delete that index from any card-level costs object
@@ -374,9 +374,9 @@ var getSettings = function (t) {
                     return buttons;
                 },
                 search: {
-                    placeholder: 'Enter new cost field',
-                    empty: 'Error',
-                    searching: 'Processing...'
+                    placeholder: 'Введите заголок нового поля',
+                    empty: 'Ошибка',
+                    searching: 'Обработка...'
                 }
             });
         });
