@@ -34,7 +34,7 @@ var getBadges = function (t) {
                                                 costs.forEach(function (cost, idx) {
                                                     if (cost) {
                                                         badges.push({
-                                                            text: costFields[idx] + ': ' + parseFloat(cost).toString(),
+                                                            text: costFields[idx] + ': ' + parseFloat(cost).toFixed(2),
                                                             color: (cost == 0) ? 'red' : null
                                                         });
                                                     }
@@ -106,7 +106,7 @@ var getBoardButtons = function (t) {
                             sums.forEach(function (sum, idx) {
                                 boardButtons.push({
                                     icon: SIGMA_ICON,
-                                    text: costFields[idx] + ': ' + parseFloat(sum).toString(),
+                                    text: costFields[idx] + ': ' + parseFloat(sum).toFixed(2),
                                     callback: function (t) {
                                         return t.lists('id', 'name')
                                             .then(function (lists) {
@@ -172,29 +172,13 @@ var getBoardButtons = function (t) {
                                                         columnEntries.push({text: listSum + ': ' + parseFloat(listSums[listSum]).toFixed(2)});
                                                     }
                                                     return t.popup({
-                                                        title: 'Бюджет для метки',
+                                                        title: 'Бюджет по меткам',
                                                         items: columnEntries
                                                     });
                                                 };
 
-                                                entries.push({text: '🔍 Бюджет для списка...', callback: summaryByColumn});
-                                                entries.push({text: '🔍 Бюджет для метки...', callback: summaryByLabel});
-                                                costArray.forEach(function (cardCosts, cardIdx) {
-                                                    if (cardCosts && cardCosts.length > 0 && cardCosts[idx]) {
-                                                        var cost = cards[cardIdx].id;
-                                                        if (activeIds.indexOf(cost) > -1) {
-                                                            var cb = function (a) {
-                                                                t.showCard(a);
-                                                            };
-                                                            entries.push({
-                                                                text: parseFloat(cardCosts[idx]).toString() + ' - ' + cards.find(function (card) {
-                                                                    return card.id == cost;
-                                                                }).name,
-                                                                callback: cb.bind(null, cost)
-                                                            });
-                                                        }
-                                                    }
-                                                });
+                                                entries.push({text: '🔍 Бюджет по спискам...', callback: summaryByColumn});
+                                                entries.push({text: '🔍 Бюджет по меткам...', callback: summaryByLabel});
 
                                                 return t.popup({
                                                     title: 'Общий бюджет',
@@ -219,14 +203,14 @@ var getButtons = function (t) {
                     costFields.forEach(function (cost, idx) {
                         buttons.push({
                             icon: SIGMA_ICON,
-                            text: costs && costs[idx] ? costFields[idx] + ': ' + parseFloat(costs[idx]).toString() : 'Добавить "' + costFields[idx] + '"...',
+                            text: costs && costs[idx] ? costFields[idx] + ': ' + parseFloat(costs[idx]).toFixed(2) : 'Добавить "' + costFields[idx] + '"...',
                             callback: t.memberCanWriteToModel('card') ? function (t) {
                                 return t.popup({
                                     title: 'Добавить "' + costFields[idx] + '"...',
                                     items: function (t, options) {
                                         var newCost = parseFloat(options.search).toFixed(2);
                                         var buttons = [{
-                                            text: !Number.isNaN(parseFloat(options.search)) ? 'Выставить "' + costFields[idx] + '" равным ' + parseFloat(newCost).toString() : '(Введите значение ' + costFields[idx] + '.)',
+                                            text: !Number.isNaN(parseFloat(options.search).toFixed(2)) ? 'Выставить "' + costFields[idx] + '" равным ' + parseFloat(newCost).toFixed(2) : '(Введите значение ' + costFields[idx] + '.)',
                                             callback: function (t) {
                                                 if (newCost != 'NaN') {
                                                     var newCosts = costs ? costs : Array(costFields.length).fill(false);
@@ -297,7 +281,7 @@ var getListActions = function (t) {
                             var boardButtons = [];
                             sums.forEach(function (sum, idx) {
                                 boardButtons.push({
-                                    text: costFields[idx] + ': ' + parseFloat(sum).toString(),
+                                    text: costFields[idx] + ': ' + parseFloat(sum).toFixed(2),
                                     callback: function (t) {
                                         var listSums = {};
                                         var entries = [];
@@ -320,7 +304,7 @@ var getListActions = function (t) {
                                             entries.push({text: listSum + ': ' + parseFloat(listSums[listSum]).toFixed(2)});
                                         }
                                         return t.popup({
-                                            title: 'Бюджет для метки',
+                                            title: 'Бюджет по меткам',
                                             items: entries
                                         });
                                     }
