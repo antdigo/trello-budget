@@ -210,7 +210,7 @@ var getButtons = function (t) {
                                     items: function (t, options) {
                                         var newCost = parseFloat(options.search).toFixed(2);
                                         var buttons = [{
-                                            text: !Number.isNaN(parseFloat(options.search).toFixed(2)) ? 'Выставить "' + costFields[idx] + '" равным ' + parseFloat(newCost).toFixed(2) : '(Введите значение ' + costFields[idx] + '.)',
+                                            text: !Number.isNaN(parseFloat(options.search)) ? 'Выставить "' + costFields[idx] + '" равным ' + parseFloat(newCost).toFixed(2) : '(Введите значение ' + costFields[idx] + '.)',
                                             callback: function (t) {
                                                 if (newCost != 'NaN') {
                                                     var newCosts = costs ? costs : Array(costFields.length).fill(false);
