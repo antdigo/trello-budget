@@ -141,7 +141,7 @@ var getBoardButtons = function (t) {
                                                             return listId == list.id
                                                         }).name;
                                                         columnEntries.push({
-                                                            text: listName + ': ' + parseFloat(listSums[listId]).toFixed(2).toString()
+                                                            text: listName + ': ' + parseFloat(listSums[listId]).toFixed(2)
                                                         });
                                                     });
                                                     return t.popup({
@@ -169,7 +169,7 @@ var getBoardButtons = function (t) {
                                                     });
 
                                                     for (var listSum in listSums) {
-                                                        columnEntries.push({text: listSum + ': ' + parseFloat(listSums[listSum]).toFixed(2).toString()});
+                                                        columnEntries.push({text: listSum + ': ' + parseFloat(listSums[listSum]).toFixed(2)});
                                                     }
                                                     return t.popup({
                                                         title: 'Бюджет для метки',
@@ -219,14 +219,14 @@ var getButtons = function (t) {
                     costFields.forEach(function (cost, idx) {
                         buttons.push({
                             icon: SIGMA_ICON,
-                            text: costs && costs[idx] ? costFields[idx] + ': ' + parseFloat(costs[idx]).toString() : 'Add ' + costFields[idx] + '...',
+                            text: costs && costs[idx] ? costFields[idx] + ': ' + parseFloat(costs[idx]).toString() : 'Добавить "' + costFields[idx] + '"...',
                             callback: t.memberCanWriteToModel('card') ? function (t) {
                                 return t.popup({
-                                    title: 'Добавить ' + costFields[idx] + '...',
+                                    title: 'Добавить "' + costFields[idx] + '"...',
                                     items: function (t, options) {
                                         var newCost = parseFloat(options.search).toFixed(2);
                                         var buttons = [{
-                                            text: !Number.isNaN(parseFloat(options.search)) ? 'Выставить ' + costFields[idx] + ' равным ' + parseFloat(newCost).toString() : '(Введите значение ' + costFields[idx] + '.)',
+                                            text: !Number.isNaN(parseFloat(options.search)) ? 'Выставить "' + costFields[idx] + '" равным ' + parseFloat(newCost).toString() : '(Введите значение ' + costFields[idx] + '.)',
                                             callback: function (t) {
                                                 if (newCost != 'NaN') {
                                                     var newCosts = costs ? costs : Array(costFields.length).fill(false);
@@ -244,7 +244,7 @@ var getButtons = function (t) {
                                         }];
                                         if (costs && costs[idx]) {
                                             buttons.push({
-                                                text: 'Удалить ' + costFields[idx],
+                                                text: 'Удалить "' + costFields[idx] + '"',
                                                 callback: function (t) {
                                                     var newCosts = costs ? costs : Array(costFields.length).fill(false);
                                                     newCosts[idx] = false;
@@ -297,95 +297,30 @@ var getListActions = function (t) {
                             var boardButtons = [];
                             sums.forEach(function (sum, idx) {
                                 boardButtons.push({
-                                    icon: SIGMA_ICON,
                                     text: costFields[idx] + ': ' + parseFloat(sum).toString(),
                                     callback: function (t) {
+                                        var listSums = {};
                                         var entries = [];
-                                        var activeIds = cards.map(function (card) {
-                                            return card.id;
-                                        });
-
-                                        var summaryByColumn = function (t) {
-                                            var listSums = {};
-                                            var columnEntries = [];
-                                            costArray.forEach(function (cardCosts, cardIdx) {
-                                                if (cardCosts && cardCosts.length > 0) {
-                                                    var cardId = cards[cardIdx].id;
-                                                    // for each active card
-                                                    if (activeIds.indexOf(cardId) > -1) {
-                                                        // if it has this cost attached
-                                                        if (cardCosts[idx]) {
-                                                            // see if listSums already has a sum under this listId
-                                                            if (!listSums[cards[cardIdx].idList]) {
-                                                                // if not create it
-                                                                listSums[cards[cardIdx].idList] = 0;
-                                                            }
-                                                            // add the cost to the list sum
-                                                            listSums[cards[cardIdx].idList] += parseFloat(cardCosts[idx]);
+                                        cards.forEach(function (card, cardIdx) {
+                                            if (costArray[cardIdx]) {
+                                                if (card.labels.length > 0) {
+                                                    card.labels.forEach(function (label) {
+                                                        var displayName = label.name || label.color;
+                                                        if (listSums[displayName]) {
+                                                            listSums[displayName] += parseFloat(costArray[cardIdx][idx]);
+                                                        } else {
+                                                            listSums[displayName] = parseFloat(costArray[cardIdx][idx]);
                                                         }
-                                                    }
-                                                }
-                                            });
-                                            Object.keys(listSums).forEach(function (listId) {
-                                                var listName = list.name;
-                                                columnEntries.push({
-                                                    text: listName + ': ' + parseFloat(listSums[listId]).toFixed(2).toString()
-                                                });
-                                            });
-                                            return t.popup({
-                                                title: 'Бюджет для списка',
-                                                items: columnEntries
-                                            });
-                                        };
-
-                                        var summaryByLabel = function (t) {
-                                            var listSums = {};
-                                            var columnEntries = [];
-                                            cards.forEach(function (card, cardIdx) {
-                                                if (costArray[cardIdx]) {
-                                                    if (card.labels.length > 0) {
-                                                        card.labels.forEach(function (label) {
-                                                            var displayName = label.name || label.color;
-                                                            if (listSums[displayName]) {
-                                                                listSums[displayName] += parseFloat(costArray[cardIdx][idx]);
-                                                            } else {
-                                                                listSums[displayName] = parseFloat(costArray[cardIdx][idx]);
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                            });
-
-                                            for (var listSum in listSums) {
-                                                columnEntries.push({text: listSum + ': ' + parseFloat(listSums[listSum]).toFixed(2).toString()});
-                                            }
-                                            return t.popup({
-                                                title: 'Бюджет для метки',
-                                                items: columnEntries
-                                            });
-                                        };
-
-                                        entries.push({text: '🔍 Бюджет для списка...', callback: summaryByColumn});
-                                        entries.push({text: '🔍 Бюджет для метки...', callback: summaryByLabel});
-                                        costArray.forEach(function (cardCosts, cardIdx) {
-                                            if (cardCosts && cardCosts.length > 0 && cardCosts[idx]) {
-                                                var cost = cards[cardIdx].id;
-                                                if (activeIds.indexOf(cost) > -1) {
-                                                    var cb = function (a) {
-                                                        t.showCard(a);
-                                                    };
-                                                    entries.push({
-                                                        text: parseFloat(cardCosts[idx]).toString() + ' - ' + cards.find(function (card) {
-                                                            return card.id == cost;
-                                                        }).name,
-                                                        callback: cb.bind(null, cost)
                                                     });
                                                 }
                                             }
                                         });
 
+                                        for (var listSum in listSums) {
+                                            entries.push({text: listSum + ': ' + parseFloat(listSums[listSum]).toFixed(2)});
+                                        }
                                         return t.popup({
-                                            title: 'Общий бюджет',
+                                            title: 'Бюджет для метки',
                                             items: entries
                                         });
                                     }
